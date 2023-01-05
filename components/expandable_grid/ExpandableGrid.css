@@ -1,0 +1,15 @@
+.expandable__grid--conatiner {
+  height: 100%;
+  padding-bottom: 100%;
+  position: relative;
+  background-color: #efefef;
+}
+
+.expandable_grid--tile {
+  position: relative;
+  background-color: white;
+}
+
+.expandable_grid__flexbox {
+  display: flex;
+}
