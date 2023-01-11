@@ -1,7 +1,10 @@
-import TextComponent from "./TextComponent";
+import { useContext } from "react";
+import { GameStateContext } from "../../App";
+import { TextComponent } from "../styled/TextComponent.styled";
 
-const GameDialog = ({ gameStates }) => {
-  const { showGameSetUp, isGameOver, isGameWon, isPayer1Turn } = gameStates;
+const GameDialog = () => {
+  const { showGameSetUp, isGameOver, isGameWon, isPayer1Turn } =
+    useContext(GameStateContext);
 
   const createText = () => {
     if (showGameSetUp) {
@@ -19,7 +22,7 @@ const GameDialog = ({ gameStates }) => {
     return `Pick a square: ${isPayer1Turn ? "Paul" : "Yoko"}!`;
   };
 
-  return <TextComponent text={createText()} />;
+  return <TextComponent>{createText()} </TextComponent>;
 };
 
 export default GameDialog;

@@ -1,63 +1,71 @@
-import { Box, Typography } from "@mui/material";
+import { useContext } from "react";
+import { GameStateContext } from "../../App";
 import NumberInput from "./NumberInput";
-import StartGameBtn from "./StartGameBtn";
+
+import {
+  ModalBackground,
+  Modal,
+  ModalHeaderText,
+  ModalSubText,
+  ModalFlex,
+  ModalCenter,
+  ModalGameBtn,
+  ModalSubHeaderText,
+} from "../styled/Modal.styled";
 
 const GameSetUpModal = ({
   boardTilesHandler,
   requiredNumberInARowHandler,
   maxNumberInARow,
   playAgain,
+  setIsDefaultTheme,
+  isDefaultTheme,
 }) => {
+  const { showGameSetUp } = useContext(GameStateContext);
+
   return (
-    <div className="modal__background">
-      <Box border={3} p={5} borderRadius={3} className="modal__content">
-        <Typography mb={1} textAlign={"center"} variant={"h6"}>
-          Welcome to Tik-Tak-Toe: Paul vs Yoko
-        </Typography>
-        <Typography textAlign={"center"} variant={"subtitle2"} mb={4}>
-          Please customize the board:
-        </Typography>
+    showGameSetUp && (
+      <ModalBackground>
+        <Modal>
+          <ModalHeaderText>Welcome to Tik-Tak-Toe:</ModalHeaderText>
+          <ModalSubHeaderText>Paul vs Yoko</ModalSubHeaderText>
+          <ModalSubText>Please customize the board:</ModalSubText>
+          <ModalFlex>
+            <ModalSubText>Board size:</ModalSubText>
+            <NumberInput
+              minValue={3}
+              maxValue={10}
+              defaultValue={4}
+              stateUpdate={boardTilesHandler}
+            />
+          </ModalFlex>
+          <ModalFlex>
+            <ModalSubText>Required number in a row:</ModalSubText>
+            <NumberInput
+              minValue={3}
+              maxValue={maxNumberInARow}
+              defaultValue={4}
+              stateUpdate={requiredNumberInARowHandler}
+              controlled={true}
+            />
+          </ModalFlex>
 
-        <Box
-          display={"flex"}
-          alignItems={"center"}
-          justifyContent={"space-between"}
-          mb={2}
-        >
-          <Typography variant={"subtitle2"} mr={2}>
-            Board size:
-          </Typography>
-          <NumberInput
-            minValue={3}
-            maxValue={10}
-            defaultValue={4}
-            stateUpdate={boardTilesHandler}
-            inputText={""}
-          />
-        </Box>
-        <Box
-          display={"flex"}
-          alignItems={"center"}
-          justifyContent={"space-between"}
-          mb={4}
-        >
-          <Typography variant={"subtitle2"} mr={2}>
-            Required number in a row:
-          </Typography>
-          <NumberInput
-            minValue={3}
-            maxValue={maxNumberInARow}
-            defaultValue={4}
-            stateUpdate={requiredNumberInARowHandler}
-            controlled={true}
-          />
-        </Box>
-
-        <Box display={"flex"} justifyContent={"center"}>
-          <StartGameBtn playAgain={playAgain} />
-        </Box>
-      </Box>
-    </div>
+          <ModalFlex>
+            <ModalSubText>Toggle Theme:</ModalSubText>
+            <ModalGameBtn
+              onClick={() =>
+                setIsDefaultTheme((setIsDefaultTheme) => !setIsDefaultTheme)
+              }
+            >
+              {isDefaultTheme ? "Dark Theme" : "Light Theme"}
+            </ModalGameBtn>
+          </ModalFlex>
+          <ModalCenter>
+            <ModalGameBtn onClick={() => playAgain()}> PLAY GAME</ModalGameBtn>
+          </ModalCenter>
+        </Modal>
+      </ModalBackground>
+    )
   );
 };
 

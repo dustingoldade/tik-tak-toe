@@ -1,29 +1,32 @@
 import { Box, Button } from "@mui/material";
+import { useContext } from "react";
+import { GameStateContext } from "../../App";
+import { Flex } from "../styled/Flex.styled";
+import { PlayAgainButton } from "../styled/Buttons.styled";
 
 const GameFinishedButtons = ({ setShowGameSetUp, playAgain }) => {
+  const { isGameOver, isGameWon, showGameSetUp } = useContext(GameStateContext);
   return (
-    <Box display={"flex"} flexDirection={"column"}>
-      <Button
-        size="small"
-        variant="contained"
-        onClick={() => {
-          playAgain();
-        }}
-      >
-        Play Again?
-      </Button>
+    (isGameOver || isGameWon) &&
+    !showGameSetUp && (
+      <Flex>
+        <PlayAgainButton
+          onClick={() => {
+            playAgain();
+          }}
+        >
+          PLAY AGAIN?
+        </PlayAgainButton>
 
-      <Button
-        variant="contained"
-        size="small"
-        sx={{ mt: 1 }}
-        onClick={() => {
-          setShowGameSetUp(true);
-        }}
-      >
-        Confirgure game
-      </Button>
-    </Box>
+        <PlayAgainButton
+          onClick={() => {
+            setShowGameSetUp(true);
+          }}
+        >
+          CONFIGURE GAME
+        </PlayAgainButton>
+      </Flex>
+    )
   );
 };
 

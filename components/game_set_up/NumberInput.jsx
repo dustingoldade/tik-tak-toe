@@ -1,14 +1,15 @@
-import { Box, Button, Typography } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import RemoveIcon from "@mui/icons-material/Remove";
 import { useState } from "react";
+import {
+  NumberInputFlex,
+  NumberInputButton,
+  ModalSubtextOptions,
+} from "../styled/Modal.styled";
 
 const NumberInput = ({
   minValue,
   maxValue,
   defaultValue,
   stateUpdate,
-  inputText,
   controlled = 0,
 }) => {
   const [value, setValue] = useState(defaultValue);
@@ -42,23 +43,11 @@ const NumberInput = ({
   }
 
   return (
-    <Box
-      display={"inline-flex"}
-      justifyItems={"center"}
-      border={1}
-      borderRadius={"5px"}
-      alignItems={"center"}
-    >
-      <Button size="small" onClick={decrementHandler}>
-        -
-      </Button>
-      <Typography variant="subtitle2" sx={{ px: 1 }}>
-        {value}
-      </Typography>
-      <Button size="small" onClick={incrementHandler}>
-        +
-      </Button>
-    </Box>
+    <NumberInputFlex>
+      <NumberInputButton onClick={decrementHandler}>-</NumberInputButton>
+      <ModalSubtextOptions>{value}</ModalSubtextOptions>
+      <NumberInputButton onClick={incrementHandler}>+</NumberInputButton>
+    </NumberInputFlex>
   );
 };
 

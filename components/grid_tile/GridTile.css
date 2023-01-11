@@ -1,14 +1,16 @@
 .grid__tile--photo-holder {
-  border: solid black 1px;
   background-size: cover;
-
   padding: 3rem;
+  border-radius: 3px;
 }
 
 .grid__tile--paul {
   background-image: url("../../locals/img/paul_photo.png");
+  cursor: default;
 }
 
 .grid__tile--yoko {
   background-image: url("../../locals/img/yoko_photo.png");
+
+  cursor: default;
 }

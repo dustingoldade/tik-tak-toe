@@ -1,110 +1,38 @@
 import "./App.css";
+import { ThemeProvider } from "styled-components";
 import { useState } from "react";
 import ExpandableGrid from "./components/expandable_grid/ExpandableGrid";
 import GameSetUp from "./components/game_set_up/GameSetUpModal";
-import { Box } from "@mui/material";
 import GameDialog from "./components/text_component/GameDialog";
 import GameFinishedButtons from "./components/game_finished_buttons/GameFinishedButtons";
+import { createContext } from "react";
+import GlobalStyles from "./components/styled/Global";
+import { Flex } from "./components/styled/Flex.styled";
+import { defaultTheme, darkTheme } from "./locals/themes";
+import {
+  checkIfGameWonCustomLen,
+  createGridObj,
+  checkIfGameOver,
+} from "./locals/utilities";
 const defaultBoardSize = 4;
 const defaultNumberInARow = 4;
+const arrayOfTilesThatWon = [];
+export const GameStateContext = createContext(null);
 
-const checkIfGameWonCustomLen = (board, inARow) => {
-  const length = board.length;
-  for (let y = 0; y < length; y++) {
-    for (let x = 0; x < length; x++) {
-      if (board[y][x] === null) {
-        continue;
-      }
-      //check Row
-      for (let i = 0; i < inARow; i++) {
-        //elimiate rows that are out of bounds
-        if (x + inARow > length) {
-          break;
-        }
-        if (board[y][x] !== board[y][x + i]) {
-          break;
-        }
-        if (i === inARow - 1) {
-          console.log("consecutive blocks found at:" + y + " " + x);
-          return true;
-        }
-      }
-      //check Col
-      for (let i = 0; i < inARow; i++) {
-        //elimiate rows that are out of bounds
-        if (y + inARow > length) {
-          break;
-        }
-        if (board[y][x] !== board[y + i][x]) {
-          break;
-        }
-        if (i === inARow - 1) {
-          console.log("consecutive blocks found at col:" + y + " " + x);
-          return true;
-        }
-      }
-      // Check Diag top left to bottom right
-      for (let i = 0; i < inARow; i++) {
-        //elimiate rows that are out of bounds
-        if (y + inARow > length || x + inARow > length) {
-          break;
-        }
-        if (board[y][x] !== board[y + i][x + i]) {
-          break;
-        }
-        if (i === inARow - 1) {
-          console.log("consecutive blocks found at diag:" + y + " " + x);
-          return true;
-        }
-      }
-      // Check Diag bottom left to top right
-      for (let i = 0; i < inARow; i++) {
-        //elimiate rows that are out of bounds
-        if (y - inARow < -1 || x + inARow > length) {
-          break;
-        }
-        if (board[y][x] !== board[y - i][x + i]) {
-          break;
-        }
-        if (i === inARow - 1) {
-          console.log(
-            "consecutive blocks found at diag btm to top:" + y + " " + x
-          );
-          return true;
-        }
-      }
-    }
-  }
-  return false;
-};
-
-const createGridObj = (length) => {
-  const arry = [];
-  for (let i = 0; i < length; i++) {
-    arry[i] = [];
-    for (let y = 0; y < length; y++) {
-      arry[i][y] = null;
-    }
-  }
-  return arry;
-};
-const checkIfGameOver = (array) => {
-  const flatMap = array.flatMap((e) => e);
-  if (!flatMap.includes(null)) {
-    return true;
-  }
-  return false;
-};
-
-//////////////////
+////////////////////////////////////////////////////////
 function App() {
   const [boardTiles, setBoardTiles] = useState(createGridObj(defaultBoardSize));
+  const [arrayOfTilesThatWon, setArrayOfTilesThatWon] = useState([]);
   const [isPayer1Turn, setIsPlayer1Turn] = useState(true);
   const [isGameWon, setIsGameWon] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
   const [showGameSetUp, setShowGameSetUp] = useState(true);
   const [requiredNumberInARow, setRequiredNumberInARow] =
     useState(defaultNumberInARow);
+  const [isDefaultTheme, setIsDefaultTheme] = useState(true);
+  const theme = isDefaultTheme ? { ...defaultTheme } : { ...darkTheme };
+
+  const gameStates = { showGameSetUp, isGameOver, isGameWon, isPayer1Turn };
 
   const playerTurn = (coordinates) => {
     // Block if game won
@@ -123,8 +51,13 @@ function App() {
 
     setBoardTiles(updatedBoardObj);
 
-    if (checkIfGameWonCustomLen(updatedBoardObj, requiredNumberInARow)) {
+    const tilesThatWon = checkIfGameWonCustomLen(
+      updatedBoardObj,
+      requiredNumberInARow
+    );
+    if (tilesThatWon) {
       setIsGameWon(true);
+      setArrayOfTilesThatWon([...tilesThatWon]);
     }
     if (checkIfGameOver(updatedBoardObj)) {
       setIsGameOver(true);
@@ -148,32 +81,29 @@ function App() {
     setRequiredNumberInARow(num);
   };
 
-  const gameStates = { showGameSetUp, isGameOver, isGameWon, isPayer1Turn };
-
   return (
-    <Box
-      display="flex"
-      justifyContent={"center"}
-      alignItems={"center"}
-      flexDirection={"column"}
-    >
-      {showGameSetUp && (
-        <GameSetUp
-          boardTilesHandler={boardTilesHandler}
-          requiredNumberInARowHandler={requiredNumberInARowHandler}
-          maxNumberInARow={boardTiles.length}
-          playAgain={playAgain}
-        />
-      )}
-      <ExpandableGrid boardTiles={boardTiles} playerTurn={playerTurn} />
-      <GameDialog gameStates={gameStates} />
-      {(isGameOver || isGameWon) && !showGameSetUp && (
-        <GameFinishedButtons
-          playAgain={playAgain}
-          setShowGameSetUp={setShowGameSetUp}
-        />
-      )}
-    </Box>
+    <Flex>
+      <ThemeProvider theme={theme}>
+        <GlobalStyles />
+        <GameStateContext.Provider value={gameStates}>
+          <GameSetUp
+            boardTilesHandler={boardTilesHandler}
+            requiredNumberInARowHandler={requiredNumberInARowHandler}
+            maxNumberInARow={boardTiles.length}
+            playAgain={playAgain}
+            setIsDefaultTheme={setIsDefaultTheme}
+            isDefaultTheme={isDefaultTheme}
+          />
+
+          <ExpandableGrid boardTiles={boardTiles} playerTurn={playerTurn} />
+          <GameDialog />
+          <GameFinishedButtons
+            playAgain={playAgain}
+            setShowGameSetUp={setShowGameSetUp}
+          />
+        </GameStateContext.Provider>
+      </ThemeProvider>
+    </Flex>
   );
 }
 
